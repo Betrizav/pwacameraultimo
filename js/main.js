@@ -1,112 +1,128 @@
-//Array para armazenar as URLs das florzinhas
+// Array para armazenar as URLs das florzinhas
 const florzinhas = [];
 
-// registrando a service worker
-if ('serviceWorker' in navigator) {
-window.addEventListener('load', async () => {
-  try {
-    let reg;
-    reg = await navigator.serviceWorker.register('/sw.js', { type: 'module' });
+// Nome da base de dados do IndexedDB
+const dbName = 'florzinhasDB';
+// Nome da store do IndexedDB
+const storeName = 'florzinhasStore';
 
-    console.log('Service worker registrada! 😎', reg);
-  } catch (err) {
-    console.log('😥 Service worker registro falhou: ', err);
-  }
-});
+// Função para criar a base de dados do IndexedDB
+function criarDB() {
+  return new Promise((resolve, reject) => {
+    const request = indexedDB.open(dbName, 1);
+
+    request.onupgradeneeded = (event) => {
+      const db = event.target.result;
+      db.createObjectStore(storeName, { autoIncrement: true, keyPath: 'id' });
+    };
+
+    request.onsuccess = (event) => {
+      resolve(event.target.result);
+    };
+
+    request.onerror = (event) => {
+      reject(event.target.error);
+    };
+  });
 }
 
-// configurando as constraintes do video stream
-var constraints = { video: { facingMode: 'user' }, audio: false };
+// Função para adicionar uma florzinha ao IndexedDB
+async function adicionarAnotacao() {
+  const db = await criarDB();
+  const transaction = db.transaction(storeName, 'readwrite');
+  const store = transaction.objectStore(storeName);
 
-// capturando os elementos em tela
-const cameraView = document.querySelector('#camera--view'),
-cameraOutput = document.querySelector('#camera--output'),
-cameraSensor = document.querySelector('#camera--sensor'),
-cameraTrigger = document.querySelector('#camera--trigger'),
-listar = document.getElementById('listar'),
-galeria = document.getElementById('galeria'),
-nome = document.getElementById('nome'),
-data = document.getElementById('data');
+  const flor = { url: florzinhas[florzinhas.length - 1].url, nome: florzinhas[florzinhas.length - 1].nome };
+  store.add(flor);
+
+  transaction.oncomplete = () => {
+    console.log('Florzinha adicionada ao IndexedDB');
+  };
+
+  transaction.onerror = (event) => {
+    console.error('Erro ao adicionar florzinha ao IndexedDB', event.target.error);
+  };
+}
+
+// Função para buscar todas as anotações no IndexedDB
+async function buscarTodasAnotacoes() {
+  const db = await criarDB();
+  const transaction = db.transaction(storeName, 'readonly');
+  const store = transaction.objectStore(storeName);
+
+  const request = store.getAll();
+
+  request.onsuccess = () => {
+    const florzinhasNoIndexedDB = request.result;
+
+    // Aqui você pode processar as florzinhas obtidas do IndexedDB conforme necessário
+    lista(florzinhasNoIndexedDB);
+  };
+
+  request.onerror = (event) => {
+    console.error('Erro ao buscar florzinhas no IndexedDB', event.target.error);
+  };
+}
+
+// Função para listar as florzinhas na página
+function lista(fotoFlor) {
+  const galeria = document.getElementById('galeria');
+  galeria.innerHTML = '';
+
+  if (fotoFlor.length > 0) {
+    fotoFlor.forEach((flor) => {
+      const nomeElement = document.createElement('p');
+      nomeElement.textContent = `Nome Da Flor: ${flor.nome}`;
+      galeria.appendChild(nomeElement);
+
+      const imgElement = document.createElement('img');
+      imgElement.src = flor.url;
+      galeria.appendChild(imgElement);
+    });
+  }
+}
 
 // Estabelecendo o acesso à câmera e inicializando a visualização
 function cameraStart() {
-navigator.mediaDevices
-  .getUserMedia(constraints)
-  .then(function (stream) {
-    let track = stream.getTracks()[0]; // Correção: getTracks é uma função
-    cameraView.srcObject = stream;
-  })
-  .catch(function (error) {
-    console.error('Ocorreu um Erro.', error);
-  });
+  const constraints = { video: { facingMode: 'user' }, audio: false };
+  const cameraView = document.getElementById('camera--view');
+  navigator.mediaDevices
+    .getUserMedia(constraints)
+    .then(function (stream) {
+      cameraView.srcObject = stream;
+    })
+    .catch(function (error) {
+      console.error('Ocorreu um Erro.', error);
+    });
 }
-
-// Função para tirar foto
-cameraTrigger.onclick = function () {
-cameraSensor.width = cameraView.videoWidth;
-cameraSensor.height = cameraView.videoHeight;
-cameraSensor.getContext('2d').drawImage(cameraView, 0, 0);
-cameraOutput.src = cameraSensor.toDataURL('image/webp');
-cameraOutput.classList.add('taken');
-
-
-
-// Adiciona a URL da foto ao array
-florzinhas.push({ url: cameraOutput.src, nome: nome.value });
-
-// Limpa o campo de descrição
-nome.value = '';
-};
-
-// Função para salvar a foto
-listar.onclick = function () {
-// Limpa a div antes de adicionar as novas imagens
-galeria.innerHTML = '';
-
-// Verifica se há pelo menos uma foto tirada
-if (florzinhas.length > 0) {
-  const Flor = florzinhas[florzinhas.length - 1];
-
-   // Adiciona a descrição como um parágrafo abaixo da foto
-   const nomeElement = document.createElement('p');
-   nomeElement.textContent = `Nome Da Flor: - ${Flor.nome}`;
-   galeria.appendChild(nomeElement);
- 
-  // Cria elemento de imagem para a última foto
-  const imgElement = document.createElement('img');
-  imgElement.src = Flor.url;
-  galeria.appendChild(imgElement);
-
- 
-} 
-};
-
-
-// Função para buscar e processar as fotos
-function lista(fotoFlor){
-// Exibe os dados no console
-console.log(fotoFlor);
-
-// Se existirem fotos, gera HTML para exibição
-if(fotoFlor){
-  const divLista = fotoFlor.map(flores => {
-    return `<div>
-        <p>Anotação</p>
-        <p>${flores.nome} - ${flores.data}</p>
-        <img src="${flores.Imagens}"/>
-      </div>`;
-  });
-  
-  // Chama a função listagem para exibir os resultados no DOM
-  listagem(divLista.join(''));
-}
-}
-
-// Função para exibir os resultados no DOM
-function listagem(text){
-// Exibe os resultados no console
-console.log(text);
-};  
 
 // Carrega imagem da câmera quando a janela carregar
 window.addEventListener('load', cameraStart, false);
+
+// Event listener para o botão de adicionar anotação
+document.getElementById('camera--trigger').addEventListener('click', () => {
+  const cameraView = document.getElementById('camera--view');
+  const cameraSensor = document.getElementById('camera--sensor');
+  const cameraOutput = document.getElementById('camera--output');
+  const nome = document.getElementById('nome');
+
+  cameraSensor.width = cameraView.videoWidth;
+  cameraSensor.height = cameraView.videoHeight;
+  cameraSensor.getContext('2d').drawImage(cameraView, 0, 0);
+  cameraOutput.src = cameraSensor.toDataURL('image/webp');
+  cameraOutput.classList.add('taken');
+
+  florzinhas.push({ url: cameraOutput.src, nome: nome.value });
+
+  // Adiciona a anotação ao IndexedDB
+  adicionarAnotacao();
+
+  // Limpa o campo de descrição
+  nome.value = '';
+});
+
+// Event listener para o botão de listar anotações
+document.getElementById('listar').addEventListener('click', () => {
+  // Busca todas as anotações no IndexedDB
+  buscarTodasAnotacoes();
+});
