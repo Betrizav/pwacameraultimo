@@ -167,7 +167,7 @@ button{
          
  }
  .jogo{
-    margin-left: 3px;
+    margin-left: 30px;
     width: 29px;
     height: 10px;
   }
@@ -180,7 +180,7 @@ button{
     border-color: #DB7093;
   }
   #galeria{
-    margin-left: 3px;
+    margin-left: 30px;
     display: inline-block;
     margin-top: 30px;
   }
@@ -198,24 +198,24 @@ h1{
     margin: 0% auto;
     margin-top: 0%;
     color: #DB7093;
-    margin-left: 3px;
+    margin-left: 14px;
     font-family: Cambria, Cochin, Georgia, Times, 'Times New Roman', serif;
   }
 .flor{
   justify-content: center;
   align-items: center;
     align-content: center;
-    margin-top: 2px;
+    margin-top: 20px;
  }
  #camera, #camera--view, #camera--sensor, #camera--output{
     position: fixed;
         height: 80%;
         width: 80%;
-        height: 60%;
+        height: 75%;
         width: 20%;
         margin-top: 1px;
         border-radius: 15px;
-        margin-left: 2px;
+        margin-left: 10px;
         object-fit: cover;
   }
   #camera--view, #camera--sensor, #camera--output{
