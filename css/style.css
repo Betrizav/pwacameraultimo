@@ -167,7 +167,7 @@ button{
          
  }
  .jogo{
-    margin-left: 30px;
+    margin-left: 3px;
     width: 29px;
     height: 10px;
   }
@@ -180,7 +180,7 @@ button{
     border-color: #DB7093;
   }
   #galeria{
-    margin-left: 30px;
+    margin-left: 3px;
     display: inline-block;
     margin-top: 30px;
   }
@@ -198,14 +198,14 @@ h1{
     margin: 0% auto;
     margin-top: 0%;
     color: #DB7093;
-    margin-left: 14px;
+    margin-left: 3px;
     font-family: Cambria, Cochin, Georgia, Times, 'Times New Roman', serif;
   }
 .flor{
   justify-content: center;
   align-items: center;
     align-content: center;
-    margin-top: 20px;
+    margin-top: 2px;
  }
  #camera, #camera--view, #camera--sensor, #camera--output{
     position: fixed;
