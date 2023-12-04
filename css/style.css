@@ -138,6 +138,10 @@ button{
         height: 100px;
         width: 100%;
         margin-left: 0%; 
+        display: grid;  
+    grid-gap: 5px;  
+    grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
+    grid-template-rows: repeat(2, 100px); 
       }
 input{
         background-color: #DB7093; 
