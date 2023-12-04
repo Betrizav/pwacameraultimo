@@ -181,8 +181,8 @@ button{
     margin-top: 30px;
   }
   img{
-    height: 100px;
-    width: 100px;
+    height: 190px;
+    width: 170px;
     margin-top: 10px;
     border-radius: 12px;
 }
@@ -201,7 +201,7 @@ h1{
   justify-content: center;
   align-items: center;
     align-content: center;
-    margin-top: 200px;
+    margin-top: 20px;
  }
  #camera, #camera--view, #camera--sensor, #camera--output{
     position: fixed;
