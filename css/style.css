@@ -211,11 +211,11 @@ h1{
     position: fixed;
         height: 80%;
         width: 80%;
-        height: 75%;
-        width: 20%;
+        height: 60%;
+        width: 60%;
         margin-top: 1px;
         border-radius: 15px;
-        margin-left: 10px;
+        margin-left: 2px;
         object-fit: cover;
   }
   #camera--view, #camera--sensor, #camera--output{
